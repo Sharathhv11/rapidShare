@@ -3,7 +3,7 @@ import {uploadHandler,uploadsValidator,upload} from "./../controllers/uploadCont
 const uploadRoute = new express.Router();
 
 
-uploadRoute.route("/upload").post(upload.array("file",5),uploadsValidator,uploadHandler);
+uploadRoute.route("/").post(upload.array("file",5),uploadsValidator,uploadHandler);
 
 
 

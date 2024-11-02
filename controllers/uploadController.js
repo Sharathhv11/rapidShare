@@ -1,7 +1,7 @@
 import multer from "multer";
 import fs from "fs";
-import sessionModel from "../module/fileSchema.js";
-import bcryptjs from "bcryptjs";
+import metaDatModel from "../module/fileSchema.js";
+import roomModel from "../module/room.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -25,7 +25,10 @@ const uploadsValidator = (req, res, next) => {
       fs.unlinkSync(file.path);
     });
 
-    res.send("file size exceeded more than 100mb");
+    res.status(400).send({
+      status: "failed",
+      message: "files exceed more than 100MB",
+    });
   } else {
     next();
   }
@@ -33,28 +36,49 @@ const uploadsValidator = (req, res, next) => {
 
 const uploadHandler = async (req, res) => {
   try {
-    const { roomID, password } = req.body;
+    const { roomID, password, author } = req.body;
 
     if (!roomID || !password) {
+      req.files.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
       return res
         .status(400)
         .json({ message: "roomID and password are required" });
     }
 
-    const hashedPassword = await bcryptjs.hash(password, 12);
+    const isExists = await roomModel.findOne({
+      roomID
+    });
+
+    if(isExists){
+      req.files.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
+      return res.status(400).send({
+        status: "failed",
+        message: "room already exists",
+      })
+    }
+
+    const room = await roomModel({
+      roomID: roomID,
+      password,
+      author
+    });
+
+    room.save();
 
     const data = req.files.map((file) => {
       return {
         fileUrl: file.path,
-        roomID: roomID,
-        password: hashedPassword,
-        author: req.body.author,
+        roomID: room._id,
         fileType: file.mimetype,
-        fileSize: file.size / (1024 * 1024) + `MB`
+        fileSize: file.size / (1024 * 1024) + `MB`,
       };
     });
 
-    await sessionModel.insertMany(data);
+    await metaDatModel.insertMany(data);
 
     res.status(201).send({
       status: "success",
