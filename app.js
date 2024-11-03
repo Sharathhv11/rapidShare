@@ -2,6 +2,8 @@ import express from "express";
 import uploadRoute from "./route/uploadRoute.js";
 import cronJobs from "./service/cronJobs.js";
 import downloadRoute from "./route/downloadRoute.js"
+import globalErrorHandler from "./controllers/errorController.js";
+import CustomError from "./utilities/customError.js";
 
 cronJobs();
 
@@ -11,5 +13,9 @@ app.use(express.json());
 
 app.use("/api/upload",uploadRoute);
 app.use("/api/download",downloadRoute);
+
+app.use("*",(req,res,next) => next(new CustomError(404,`not found`)));
+
+app.use(globalErrorHandler);
 
 export default app;

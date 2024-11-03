@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import metadata from "../module/fileSchema.js";
 import room from "./../module/room.js"
-import fs from "fs";
+import fileDeleter from "../utilities/fileDeleter.js";
 
 export default function () {
   return cron.schedule("* * * * * *", async () => {
@@ -22,9 +22,8 @@ export default function () {
               roomID : elem._id.toString()
             })
 
-            data.forEach((elem) => {
-              fs.unlinkSync(elem.fileUrl)
-            })
+           
+            fileDeleter(data,true);
 
             await metadata.deleteMany({
               roomID : elem._id.toString()
@@ -39,11 +38,6 @@ export default function () {
         }
       })
 
-      
-      
-      
-    
-     
     } catch (error) {
       console.log(error.message);
     }

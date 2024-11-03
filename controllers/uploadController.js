@@ -2,7 +2,12 @@ import multer from "multer";
 import fs from "fs";
 import metaDatModel from "../module/fileSchema.js";
 import roomModel from "../module/room.js";
+import asynchandler from "../utilities/asyncHandler.js";
+import CustomError from "./../utilities/customError.js"
+import fileDeleter from "../utilities/fileDeleter.js";
 
+
+//?storing the files received from front end 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads");
@@ -13,61 +18,56 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
 
+//?initiating the multer 
+const upload = multer({
+   storage: storage, 
+  });
+
+
+//validating the files 
 const uploadsValidator = (req, res, next) => {
+
+  //?computing the total size of the files 
   const totalSize = req.files.reduce((a, currentObj) => {
     return a + currentObj.size;
   }, 0);
 
-  if (totalSize / (1024 * 1024) > 100) {
-    req.files.forEach((file) => {
-      fs.unlinkSync(file.path);
-    });
 
-    res.status(400).send({
-      status: "failed",
-      message: "files exceed more than 100MB",
-    });
-  } else {
-    next();
-  }
+  //!if total file size exceeds more than 100 mb send bad requests
+  if (totalSize / (1024 * 1024) > 100) {
+    return next(new CustomError(400,"files exceeds more than 100mb"))
+  } 
+  next();
 };
 
-const uploadHandler = async (req, res) => {
-  try {
+
+//?handler that stores the meta inormation of the files of room
+const uploadHandler = asynchandler(async (req, res,next) => {
+
+    //*extracting the required feilds from body
     const { roomID, password, author } = req.body;
 
     if (!roomID || !password) {
-      req.files.forEach((file) => {
-        fs.unlinkSync(file.path);
-      });
-      return res
-        .status(400)
-        .json({ message: "roomID and password are required" });
+      return next(new CustomError(400,"roomID and password are required"))
     }
 
     const isExists = await roomModel.findOne({
       roomID
     });
 
+
+    //*if room exists send bad response
     if(isExists){
-      req.files.forEach((file) => {
-        fs.unlinkSync(file.path);
-      });
-      return res.status(400).send({
-        status: "failed",
-        message: "room already exists",
-      })
+      return next(new CustomError(400,"room already exists"));
     }
 
-    const room = await roomModel({
+    const room = await roomModel.create({
       roomID: roomID,
       password,
       author
     });
 
-    room.save();
 
     const data = req.files.map((file) => {
       return {
@@ -84,16 +84,7 @@ const uploadHandler = async (req, res) => {
       status: "success",
       message: "File uploaded successfully and expires in 10mins",
     });
-  } catch (error) {
-    req.files.forEach((file) => {
-      fs.unlinkSync(file.path);
-    });
-
-    res.status(400).send({
-      status: "failed",
-      message: error.message,
-    });
-  }
-};
+  
+});
 
 export { uploadHandler, uploadsValidator, upload };
