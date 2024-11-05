@@ -1,13 +1,14 @@
 import { configDotenv } from "dotenv";
-import app from "./app.js"
 
 configDotenv({
-    path:"./config.env"
+    path:".env"
 })
 
 import database from "./config/database.js"
 
 database();
+
+import app from "./app.js"
 
 
 const port = process.env.PORT || 3000;

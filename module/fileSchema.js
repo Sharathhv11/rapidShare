@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 
 const metaData = new mongoose.Schema(
   {
+    filename:{
+      type:String,
+      required:true,
+      trim:true
+
+    },
     fileUrl: {
       type: String,
       required: true,
