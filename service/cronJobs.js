@@ -5,6 +5,7 @@ import fileDeleter from "../utilities/fileDeleter.js";
 
 export default function () {
   return cron.schedule("* * * * * *", async () => {
+
     try {
 
         const  expRoom = await room.find({
@@ -17,6 +18,7 @@ export default function () {
       });
 
       expRoom.forEach(async (elem) => {
+
         try{
             const data = await metadata.find({
               roomID : elem._id.toString()

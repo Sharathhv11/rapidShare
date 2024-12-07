@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Pixelify Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    color : white;
+    
+}
+
+
+/*! variables */
+::root{
+    
+}
+
+
+html,body{
+    width:100%;
+    height:100%;
+    min-width: max-content;
+    background: #4361EE;
+}
+
+nav{
+    width:100%;
+    height:4rem;
+    background: #000;
+    padding:0 2rem;
+    display: flex;  
+}
+
+#Logo{
+    width : 40%;
+    height:100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.logo-container{
+    max-width: 270px;
+    width: 100%; /* Ensures the container adjusts to the parent's width */
+    min-width: 150px;
+    height: auto; /* Ensures height adjusts proportionally */
+}
+.logo-container img{
+    width: 100%;
+    height:100%;
+}
+
+#Nav-Links{
+    width:60%;
+    height:100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap:1rem;
+}
+
+#Nav-Links a{
+    color : white;
+    text-transform: uppercase;
+    text-decoration: none;
+
+}
+
+main{
+    height: calc( 99vh - 60px );
+    display: flex;
+    padding:0 2rem;
+}
+
+main > section:first-child{
+    width:50%;
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#home-page-img-container,#home-page-img-container img{
+    width:100%;
+    height:400px;
+}
+
+#home-page-img-container img{
+    position: relative;
+    object-fit: contain;
+}
+
+#main-Header{
+    font-size: 4rem;
+    text-shadow: 0 5px 0px black;
+}
+
+.main-header-2{
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    text-align: start;
+}
+
+#upload{
+    width:126px;
+    height:38px;
+    background: black;
+    border:none;
+    outline: none;
+    box-shadow: 4px 4px 0 rgb(4, 255, 4);
+    cursor:pointer;
+}
+
+main section:last-child{
+    width:60%;
+    display: flex;
+    justify-content: start; 
+    align-items: center;
+    flex-direction: column;
+    margin: 3rem 0;
+}
+
+.section-2-main,.section-2-sub{
+    width:100%;
+    height:200px;
+    display: flex;
+
+    flex-direction: column  ;
+}
+
+.span-headers{
+    display: inline-block;
+    width:200px;
+}
+
+
+
+@media (width<=1000px){
+    main section:first-child{
+        display: none;
+    }
+
+    main section:last-child{
+        width:100%;
+    }
+
+    .section-2-main,.section-2-sub{
+        justify-content: center;
+        align-items: center;
+    }
+}

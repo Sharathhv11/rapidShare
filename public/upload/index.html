@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Upload Form</title>
+    <style>
+      /* Your existing styles */
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <form id="upload-form">
+        <label for="room-id">Room ID*</label>
+        <input
+          type="text"
+          id="room-id"
+          placeholder="Enter the room ID, e.g., example1234"
+          required
+        />
+
+        <label for="password">Password*</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter the password"
+          required
+        />
+
+        <div class="upload-area">
+          <input type="file" multiple id="files" />
+          <p>Drag file(s) to upload</p>
+          <p>
+            Alternatively, you can select files by clicking
+            <a href="">click here</a>
+          </p>
+        </div>
+
+        <button type="submit" id="submit">Submit</button>
+      </form>
+    </div>
+    <script>
+      const inputelement = document.getElementById("files");
+
+      inputelement.addEventListener("change", (event) => {
+        const fileInput = event.currentTarget;
+        const parent = fileInput.parentNode; // Parent node of the file input
+        const files = Array.from(fileInput.files);
+
+        // Optional: Clear existing file names to avoid duplication
+        const existingFiles = parent.querySelectorAll("p.file-name");
+        existingFiles.forEach((file) => file.remove());
+
+        // Loop through the files and append their names
+        files.forEach((file) => {
+          const child = document.createElement("p");
+          child.classList.add("file-name"); // Add a class for styling/identification
+          child.textContent = file.name; // Set the text to the file name
+          parent.append(child); // Append to the parent node
+        });
+      });
+
+      async function uploadFiles(password, roomID, files) {
+        try {
+          console.log("Working...");
+          // Create a FormData object to send data including files
+          const formData = new FormData();
+          formData.append("password", password);
+          formData.append("roomID", roomID);
+
+          // Append each file to the FormData object
+          Array.from(files).forEach((file, index) => {
+            formData.append(`file_${index}`, file); // Use unique keys for each file
+          });
+
+          // Make the POST request
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          // Check for response status and parse JSON
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log("Upload successful:", data);
+          return data; // Return the response for further processing
+        } catch (error) {
+          console.error("Upload failed:", error);
+        }
+      }
+
+      const form = document.getElementById("upload-form");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault(); // Prevent form submission from reloading the page
+
+        const password = document.getElementById("password").value;
+        const roomID = document.getElementById("room-id").value;
+        const files = document.getElementById("files").files;
+
+        // Call the uploadFiles function
+        uploadFiles(password, roomID, files);
+      });
+    </script>
+  </body>
+</html>

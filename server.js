@@ -1,8 +1,4 @@
-import { configDotenv } from "dotenv";
-
-configDotenv({
-    path:".env"
-})
+import "dotenv/config"
 
 import database from "./config/database.js"
 
