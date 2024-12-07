@@ -4,21 +4,32 @@ import metaDatModel from "../module/fileSchema.js";
 import roomModel from "../module/room.js";
 import asynchandler from "../utilities/asyncHandler.js";
 import CustomError from "./../utilities/customError.js";
+import supabaseClient from "./../config/supabase.js";
+
+/*******
+
+
 
 //?storing the files received from front end
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "./uploads");
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//     cb(null, uniqueSuffix + "-" + file.originalname);
+//   },
+// });
+
+
+
+******/
+
+const storage = multer.memoryStorage();
 
 //?initiating the multer
 const upload = multer({
-  storage: storage,
+  storage,
 });
 
 //validating the files
@@ -32,12 +43,12 @@ const uploadsValidator = (req, res, next) => {
   if (totalSize / (1024 * 1024) > 100) {
     return next(new CustomError(400, "files exceeds more than 100mb"));
   }
+
   next();
 };
 
 //?handler that stores the meta inormation of the files of room
 const uploadHandler = asynchandler(async (req, res, next) => {
-  
   req.uploadError = true;
   //*extracting the required feilds from body
   const { roomID, password, author } = req.body;
@@ -61,17 +72,35 @@ const uploadHandler = asynchandler(async (req, res, next) => {
     author,
   });
 
-  const data = req.files.map((file) => {
+  const dataToUpload = req.files.map(async (file) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const { data, error } = await supabaseClient.storage
+      .from("Rapid-Share")
+      .upload(`${uniqueSuffix + "-" + file.originalname}`, file.buffer, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      next(new CustomError(500, "our servers are running downtime try again"));
+    }
+
+    
+
     return {
       filename: file.originalname,
-      fileUrl: file.path,
+      fileUrl: data.path,
       roomID: room._id,
       fileType: file.mimetype,
       fileSize: file.size / (1024 * 1024) + `MB`,
     };
   });
 
-  await metaDatModel.insertMany(data);
+  Promise.all(dataToUpload).then(async  data => {
+     await metaDatModel.insertMany(data);
+  })
+
+
 
   res.status(201).send({
     status: "success",

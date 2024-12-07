@@ -1,0 +1,4 @@
+PORT=5000
+DATABASE='mongodb+srv://admin:43XnsmCz05NxttOF@cluster01.hulwm.mongodb.net/rapid-share?retryWrites=true&w=majority&appName=Cluster01/rapid-share'
+NODE_ENV="dev"
+

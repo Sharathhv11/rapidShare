@@ -1,12 +1,16 @@
-import fs from "fs";
+import supabase from "../config/supabase.js";
+
 const fileDeleter = (files, db = false) => {
-  files.forEach((file) => {
-    if (db && fs.existsSync(file.fileUrl)) {
-      fs.unlinkSync(file.fileUrl);
-    } else if (!db) {
-      fs.unlinkSync(file.path);
-    }
+  files.forEach(async (file) => {
+    const { data, error } = await supabase
+    .storage
+    .from('Rapid-Share')
+    .remove(file.fileUrl)
   });
+
+  if(error){
+    console.log(error.message);
+  }
 };
 
 export default fileDeleter;
