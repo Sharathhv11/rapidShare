@@ -4,6 +4,7 @@ import cronJobs from "./service/cronJobs.js";
 import downloadRoute from "./route/downloadRoute.js"
 import globalErrorHandler from "./controllers/errorController.js";
 import CustomError from "./utilities/customError.js";
+import cors from "cors"
 
 cronJobs();
 
