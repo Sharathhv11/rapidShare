@@ -7,8 +7,6 @@ const fileDeleter = (files, db = false) => {
     .from('Rapid-Share')
     .remove(file.fileUrl)
   });
-
- 
 };
 
 export default fileDeleter;
