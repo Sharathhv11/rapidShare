@@ -8,9 +8,7 @@ const fileDeleter = (files, db = false) => {
     .remove(file.fileUrl)
   });
 
-  if(error){
-    console.log(error.message);
-  }
+ 
 };
 
 export default fileDeleter;
