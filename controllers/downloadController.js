@@ -50,7 +50,7 @@ const handleDownloadValidator = asynchandler(async (req, res, next) => {
   const data = files.map((elem) => {
     const { fileUrl } = elem;
 
-    const urlToDOwnloadFile = `${req.protocol}://${req.get(
+    const urlToDOwnloadFile = `https://${req.get(
       "host"
     )}/api/download/${fileUrl}`;
 
