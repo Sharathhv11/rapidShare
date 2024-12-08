@@ -6,6 +6,7 @@ import globalErrorHandler from "./controllers/errorController.js";
 import CustomError from "./utilities/customError.js";
 import cors from "cors";
 
+
 cronJobs();
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cors({
     origin : process.env.NODE_ENV === "dev" ? "*":process.env.CORS_URL
 }));
+
 
 
 app.use("/api/upload",uploadRoute);
@@ -31,3 +33,4 @@ app.use(globalErrorHandler);
 
 
 export default app;
+
