@@ -70,47 +70,64 @@ const handleDownloadValidator = asynchandler(async (req, res, next) => {
 });
 
 const handleDownload = asynchandler(async (req, res, next) => {
-  let token = req.headers.authorization;
-
-  if (token && token.toUpperCase().startsWith("BEARER")) {
-    token = req.headers.authorization.split(" ")[1];
-  } else {
-    return next(new CustomError(404, "unauthorized to access the file"));
-  }
-
-  if (!token) {
-    return next(new CustomError(404, "unauthorized to access the file"));
-  }
-
-  const decodeJWT = jsonwebtoken.verify(token, process.env.JWT_SIGN);
-
-  const { fileName } = req.params;
-
   try {
+    // Extract the authorization token
+    let token = req.headers.authorization;
+
+    if (!token || !token.toUpperCase().startsWith("BEARER ")) {
+      return next(new CustomError(401, "Unauthorized to access the file"));
+    }
+
+    token = token.split(" ")[1];
+
+    if (!token) {
+      return next(new CustomError(401, "Unauthorized to access the file"));
+    }
+
+    // Verify the token
+    let decodeJWT;
+    try {
+      decodeJWT = jsonwebtoken.verify(token, process.env.JWT_SIGN);
+    } catch (err) {
+      return next(new CustomError(401, "Invalid or expired token"));
+    }
+
+    // Extract the file name from request parameters
+    const fileName = req.params.file;
+    if (!fileName) {
+      return next(new CustomError(400, "File name is required"));
+    }
+
     // Download the file from Supabase Storage
     const { data, error } = await supabase.storage
       .from("Rapid-Share")
       .download(fileName);
 
     if (error) {
-      return res.status(500).send("Failed to download file. Please try again");
-    } else if (!data) {
-      return res.status(404).send("File not exists in our server");
+      console.error("Supabase download error:", error.message);
+      return res
+        .status(500)
+        .send("Failed to download the file. Please try again.");
     }
 
-    // Set response headers for downloading the file
+    if (!data) {
+      return res.status(404).send("File does not exist on our server.");
+    }
+
+    // Stream the file to the response
     res.setHeader("Content-Type", data.type); // Dynamic MIME type
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="${fileName.split("/").pop()}"`
     );
-    res.setHeader("Content-Length", data.size);
 
-    // Stream the file to the response
     const buffer = Buffer.from(await data.arrayBuffer());
     res.send(buffer);
   } catch (err) {
-    return res.status(500).send("An error occurred while downloading the file");
+    console.error("Unexpected error while downloading the file:", err.message);
+    return res
+      .status(500)
+      .send("An error occurred while processing the request.");
   }
 });
 
