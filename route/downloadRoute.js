@@ -4,6 +4,11 @@ import { handleDownloadValidator,handleDownload } from "../controllers/downloadC
 const downloadRoute = new Router();
 
 downloadRoute.route("/").post(handleDownloadValidator);
-downloadRoute.route("/:fileName").get(handleDownload);
+
+
+downloadRoute.route("/:file").get(
+    handleDownload
+);
+
 
 export default downloadRoute;
