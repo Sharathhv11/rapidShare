@@ -4,7 +4,7 @@ import room from "./../module/room.js"
 import fileDeleter from "../utilities/fileDeleter.js";
 
 export default function () {
-  return cron.schedule("* * * * * *", async () => {
+  return cron.schedule("*/30 * * * * *", async () => {
 
     try {
 
