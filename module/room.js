@@ -36,7 +36,7 @@ room.pre('save', async function (next) {
 
   room.pre("save", function (next) {
     if (!this.expireTime) {
-        this.expireTime = new Date(Date.now() + 24*60*60*1000); 
+        this.expireTime = new Date(Date.now() + 10*60*1000); 
       
     }
     next();
