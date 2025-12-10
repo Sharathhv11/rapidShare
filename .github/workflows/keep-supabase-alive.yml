@@ -1,0 +1,16 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # once every day at 7:00 AM IST (01:30 UTC)
+    - cron: "30 1 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Supabase to prevent inactivity pause
+        run: |
+          curl -I "https://<PROJECT_REF>.supabase.co/rest/v1/" || true
