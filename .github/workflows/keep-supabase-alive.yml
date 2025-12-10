@@ -13,4 +13,4 @@ jobs:
     steps:
       - name: Ping Supabase to prevent inactivity pause
         run: |
-          curl -I "https://<PROJECT_REF>.supabase.co/rest/v1/" || true
+          curl -I "https://uegoyqdcdicslpnapkxr.supabase.co/rest/v1/" || true
