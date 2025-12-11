@@ -6,7 +6,7 @@ cron.schedule("30 2 * * *", async () => {
   try {
     console.log("Pinging Supabase at 8:00 AM IST...");
     const res = await axios.get(
-      "https://fxfcccrzkabovfkhwlqn.supabase.co/rest/v1/"
+      "https://uegoyqdcdicslpnapkxr.supabase.co/rest/v1/"
     );
     console.log("Supabase status:", res.status);
   } catch (err) {
