@@ -1,6 +1,7 @@
 import "dotenv/config"
 
 import database from "./config/database.js"
+import "./utilities/supabaseKeepAlive.js"
 
 database();
 
